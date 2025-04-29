@@ -1,0 +1,9 @@
+#ifndef PRIVATE_CONFIG_H
+#define PRIVATE_CONFIG_H
+
+#define MQTT_SERVER    "BROKER_URL"
+#define MQTT_PORT      BROKER_PORT
+#define MQTT_USER      "BROKER_USERNAME"
+#define MQTT_PASSWORD  "BROKER_PASSWORD"
+
+#endif
