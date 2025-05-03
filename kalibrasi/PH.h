@@ -29,6 +29,10 @@ float readPH() {
   if (value_ph < 0) value_ph = 0;
   if (value_ph > 14) value_ph = 14;
 
+  Serial.print("[PH] ADC: "); Serial.print(raw_adc_ph);
+  Serial.print(" | Voltage: "); Serial.print(voltage_ph, 3);
+  Serial.print(" V | pH: "); Serial.println(value_ph, 2);
+
   return roundf(value_ph * 100) / 100.0;
 }
 
