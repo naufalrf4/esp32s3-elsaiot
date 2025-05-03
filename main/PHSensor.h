@@ -26,7 +26,7 @@ float readPH() {
   if (value_ph < 0) value_ph = 0;
   if (value_ph > 14) value_ph = 14;
 
-  return value_ph;
+  return roundf(value_ph * 100) / 100.0;
 }
 
 #endif

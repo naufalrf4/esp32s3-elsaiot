@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#define DO_SENSOR_PIN 34
+#define DO_SENSOR_PIN 16
 
 int raw_adc_do = 0;
 float voltage_do = 0.0;

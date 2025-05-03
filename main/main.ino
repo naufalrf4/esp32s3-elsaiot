@@ -5,6 +5,7 @@
 #include "TempSensor.h"
 #include "SendData.h"
 #include "TDSSensor.h"
+#include "DOSensor.h"
 #include "PHSensor.h"
 
 void setup() {
@@ -17,6 +18,7 @@ void setup() {
   initTemperatureSensor();
   initTDSSensor();
   initPHSensor();
+  initDOSensor();
 
   showStatus("Connecting WiFi...");
   connectToWiFi();
@@ -35,7 +37,7 @@ void loop() {
   float tempC = readTemperatureC();
   float ph    = readPH();
   float tds   = readTDS();
-  float doVal = random(400, 900) / 100.0;
+  float doVal = readDO();
 
   Serial.printf("🕒 %02d/%02d/%04d %02d:%02d:%02d | 🌡️ %.2f °C | pH: %.2f | TDS: %d ppm | DO: %.2f mg/L\n",
                 now.day(), now.month(), now.year(),
