@@ -2,34 +2,40 @@
 #define PH_SENSOR_H
 
 #include <Arduino.h>
+#include <Adafruit_ADS1X15.h>
 
-#define PH_SENSOR_PIN 14
+#define PH_CHANNEL 0  // ADS1115 A0
 
-int raw_adc_ph = 0;
-float voltage_ph = 0.0;
-float value_ph = 0.0;
+extern Adafruit_ADS1115 ads;
+extern float ph_regression_m;
+extern float ph_regression_c;
 
-float ph_voltage_offset = 0.0;
-float ph_voltage_divisor = 1.0;
-float ph_regresi_m = 1.0;
-float ph_regresi_c = 0.0;
+int16_t ph_adc_raw = 0;
+float ph_voltage = 0.0;
+float ph_value = 0.0;
 
 void initPHSensor() {
-  pinMode(PH_SENSOR_PIN, INPUT);
   Serial.println("🌊 PH Sensor initialized.");
 }
 
+float readVoltPH() {
+  ph_adc_raw = ads.readADC_SingleEnded(PH_CHANNEL);
+  ph_voltage = ph_adc_raw * (3.3 / 32767.0);
+  return ph_voltage;
+}
+
 float readPH() {
-  raw_adc_ph = analogRead(PH_SENSOR_PIN);
-  voltage_ph = raw_adc_ph * (3.3 / 4095.0);
+  ph_voltage = readVoltPH();
+  ph_value = (ph_regression_m * ph_voltage) + ph_regression_c;
 
-  float temp_ph = (voltage_ph - ph_voltage_offset) / ph_voltage_divisor;
-  value_ph = (ph_regresi_m * temp_ph) + ph_regresi_c;
+  if (ph_value < 0) ph_value = 0;
+  if (ph_value > 14) ph_value = 14;
 
-  if (value_ph < 0) value_ph = 0;
-  if (value_ph > 14) value_ph = 14;
+  Serial.print("[PH] ADC: "); Serial.print(ph_adc_raw);
+  Serial.print(" | Voltage: "); Serial.print(ph_voltage, 3);
+  Serial.print(" V | pH: "); Serial.println(ph_value, 2);
 
-  return roundf(value_ph * 100) / 100.0;
+  return ph_value;
 }
 
 #endif

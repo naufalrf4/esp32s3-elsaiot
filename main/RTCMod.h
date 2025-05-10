@@ -4,8 +4,8 @@
 #include <Wire.h>
 #include <RTClib.h>
 
-#define SDA_PIN 21
-#define SCL_PIN 20
+#define SDA_PIN 40
+#define SCL_PIN 41
 
 RTC_DS3231 rtc;
 

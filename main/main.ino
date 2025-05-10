@@ -7,14 +7,16 @@
 #include "TDSSensor.h"
 #include "DOSensor.h"
 #include "PHSensor.h"
+#include "InitADS.h"
 
 void setup() {
   Serial.begin(115200);
-  delay(1000);
+  delay(3000);
 
   initTFT();
   showStatus("System Init...");
-  initRTC();
+  // initRTC();
+  initADS();
   initTemperatureSensor();
   initTDSSensor();
   initPHSensor();
@@ -32,27 +34,28 @@ void setup() {
 
 void loop() {
   updateHeader();
-  DateTime now = readRTC();
+  // DateTime now = readRTC();
 
   float tempC = readTemperatureC();
-  float ph    = readPH();
-  float tds   = readTDS();
+  float phVal = readPH();
+  float phVolt = readVoltPH();
+  float tdsVal = readTDS();
+  float tdsVolt = readVoltTDS();
   float doVal = readDO();
+  float doVolt = readVoltDO();
 
-  Serial.printf("🕒 %02d/%02d/%04d %02d:%02d:%02d | 🌡️ %.2f °C | pH: %.2f | TDS: %d ppm | DO: %.2f mg/L\n",
+  Serial.printf("🌡️ %.2f °C | pH: %.2f (%.3f V) | TDS: %d ppm (%.3f V) | DO: %.2f mg/L (%.3f V)\n",
                 now.day(), now.month(), now.year(),
                 now.hour(), now.minute(), now.second(),
-                tempC, ph, tds, doVal);
+                tempC, phVal, phVolt, tdsVal, tdsVolt, doVal, doVolt);
 
-  showClock(now);
+  // showClock(now);
   drawTemp(tempC);
-  drawPH(ph);
-  drawTDS(tds);
+  drawPH(phVal);
+  drawTDS(tdsVal);
   drawDO(doVal);
 
-  sendSensorData(
-    ph, tempC, tds, doVal
-  );
+  sendSensorData(phVal, tempC, tdsVal, doVal, phVolt, tdsVolt, doVolt);
 
   delay(1000);
 }

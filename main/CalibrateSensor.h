@@ -6,13 +6,14 @@
 
 extern PubSubClient client;
 
-float ph_slope = 1.0;
-float ph_offset = 0.0;
+float ph_regression_m = 1.0;
+float ph_regression_c = 0.0;
 
-float tds_factor = 0.5;
+float tds_regression_m = 1.0;
+float tds_regression_c = 0.0;
 
-float do_slope = 1.0;
-float do_offset = 0.0;
+float do_regression_m = 1.0;
+float do_regression_c = 0.0;
 
 void handleCalibrateMessage(const String& payload) {
   StaticJsonDocument<512> doc;
@@ -24,20 +25,21 @@ void handleCalibrateMessage(const String& payload) {
   }
 
   if (doc.containsKey("ph")) {
-    ph_slope = doc["ph"]["slope"];
-    ph_offset = doc["ph"]["offset"];
-    Serial.printf("✅ PH Calibrated: slope=%.3f, offset=%.3f\n", ph_slope, ph_offset);
+    ph_regression_m = doc["ph"]["m"];
+    ph_regression_c = doc["ph"]["c"];
+    Serial.printf("✅ PH Calibrated: m=%.3f, c=%.3f\n", ph_regression_m, ph_regression_c);
   }
 
   if (doc.containsKey("tds")) {
-    tds_factor = doc["tds"]["factor"];
-    Serial.printf("✅ TDS Calibrated: factor=%.3f\n", tds_factor);
+    tds_regression_m = doc["tds"]["m"];
+    tds_regression_c = doc["tds"]["c"];
+    Serial.printf("✅ TDS Calibrated: m=%.3f, c=%.3f\n", tds_regression_m, tds_regression_c);
   }
 
   if (doc.containsKey("do")) {
-    do_slope = doc["do"]["slope"];
-    do_offset = doc["do"]["offset"];
-    Serial.printf("✅ DO Calibrated: slope=%.3f, offset=%.3f\n", do_slope, do_offset);
+    do_regression_m = doc["do"]["m"];
+    do_regression_c = doc["do"]["c"];
+    Serial.printf("✅ DO Calibrated: m=%.3f, c=%.3f\n", do_regression_m, do_regression_c);
   }
 }
 

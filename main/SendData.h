@@ -58,7 +58,8 @@ void initSendData() {
 }
 
 // === Publish Sensor Data to MQTT ===
-void sendSensorData(float ph, float suhu, int tds, float do_mg) {
+void sendSensorData(float ph, float suhu, int tds, float do_mg,
+                    float ph_voltage, float tds_voltage, float do_voltage) {
   if (!client.connected()) {
     initSendData();
   }
@@ -66,13 +67,17 @@ void sendSensorData(float ph, float suhu, int tds, float do_mg) {
 
   String topic = "elsaiot/" + getDeviceID() + "/data";
 
-  StaticJsonDocument<256> doc;
+  StaticJsonDocument<384> doc;
   doc["ph"] = ph;
   doc["temperature"] = suhu;
   doc["tds"] = tds;
   doc["dissolved_oxygen"] = do_mg;
 
-  char buffer[256];
+  doc["ph_voltage"] = ph_voltage;
+  doc["tds_voltage"] = tds_voltage;
+  doc["do_voltage"] = do_voltage;
+
+  char buffer[384];
   serializeJson(doc, buffer);
 
   if (client.publish(topic.c_str(), buffer)) {

@@ -2,34 +2,40 @@
 #define TDS_SENSOR_H
 
 #include <Arduino.h>
+#include <Adafruit_ADS1X15.h>
 
-#define TDS_SENSOR_PIN 12
+#define TDS_CHANNEL 1
 
-int raw_adc_tds = 0;
-float voltage_tds = 0.0;
-float value_tds = 0.0;
+extern Adafruit_ADS1115 ads;
+extern float tds_regression_m;
+extern float tds_regression_c;
 
-extern float tds_factor;
+int16_t tds_adc_raw = 0;
+float tds_voltage = 0.0;
+float tds_value = 0.0;
 
 void initTDSSensor() {
-  pinMode(TDS_SENSOR_PIN, INPUT);
   Serial.println("🌊 TDS Sensor initialized.");
 }
 
-// === Read TDS Value (ppm) ===
+float readVoltTDS() {
+  tds_adc_raw = ads.readADC_SingleEnded(TDS_CHANNEL);
+  tds_voltage = tds_adc_raw * (3.3 / 32767.0);
+  return tds_voltage;
+}
+
 float readTDS() {
-  raw_adc_tds = analogRead(TDS_SENSOR_PIN);
-  
-  voltage_tds = raw_adc_tds * (3.3 / 4095.0);
+  tds_voltage = readVoltTDS();
+  tds_value = (tds_regression_m * tds_voltage) + tds_regression_c;
 
-  value_tds = (voltage_tds / 3.3) * 1000.0; 
+  if (tds_value < 0) tds_value = 0;
+  if (tds_value > 1000) tds_value = 1000;
 
-  value_tds = value_tds * tds_factor;
+  Serial.print("[TDS] ADC: "); Serial.print(tds_adc_raw);
+  Serial.print(" | Voltage: "); Serial.print(tds_voltage, 3);
+  Serial.print(" V | TDS: "); Serial.println(tds_value, 1);
 
-  if (value_tds < 0) value_tds = 0;
-  if (value_tds > 1000) value_tds = 1000;
-
-  return value_tds;
+  return tds_value;
 }
 
 #endif
